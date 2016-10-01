@@ -4,7 +4,7 @@ BRCLI is a Backup &amp; Restore CLI. It's built for self hosted VPS with EasyEng
 ##Installation
 To install `brcli` run the following command in your Mac's terminal.
 ```bash
-wget -qO cem https://git.io/vixvj && sudo chmod +x ./cem && sudo install ./cem /usr/local/bin/cem
+wget -qO brcli https://git.io/vPqty && sudo chmod +x ./brcli && sudo install ./brcli /usr/local/bin/brcli
 ```
 
 ## Usage
@@ -17,5 +17,5 @@ Usage: brcli `[ -b |--backup ]`, `[ -ba | --backup_all ]`, `[ -r | --resotre ]`,
 
 ## Changelog
 ### 1.0.0 (2016-10-02)
-- NEW: Backup all sites to dropbox
-- NEW: Restore all sites from dropbox
+- NEW: Backup all sites to Dropbox
+- NEW: Restore all sites from Dropbox
