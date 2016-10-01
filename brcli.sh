@@ -77,7 +77,7 @@ if [[ "$is_backup_all" == "yes" ]]; then
 	# Start the loop
 	for SITE in ${SITELIST[@]}; do
 		echo "——————————————————————————————————"
-		echo "⚡️  Backing up the site: $SITE..."
+		echo "⚡️  Backing up the site: $SITE_NAME..."
 		echo "——————————————————————————————————"
 
 		# Enter the WordPress folder.
@@ -89,14 +89,14 @@ if [[ "$is_backup_all" == "yes" ]]; then
 		fi
 
 		echo "——————————————————————————————————"
-		echo "⏲  Creating Files Backup for: $SITE..."
+		echo "⏲  Creating Files Backup for: $SITE_NAME..."
 		echo "——————————————————————————————————"
 
 		# Back up the WordPress folder.
 		tar -czf $BACKUPPATH/$SITE/$DATEFORM-$SITE.tar.gz .
 
 		echo "——————————————————————————————————"
-		echo "⏲  Creating Database Backup for: $SITE..."
+		echo "⏲  Creating Database Backup for: $SITE_NAME..."
 		echo "——————————————————————————————————"
 
 		# Back up the WordPress database.
@@ -105,7 +105,7 @@ if [[ "$is_backup_all" == "yes" ]]; then
 		rm $BACKUPPATH/$SITE/$DATEFORM-$SITE.sql
 
 		echo "——————————————————————————————————"
-		echo "⏲  Uploading Files & Database Backup to Dropbox for: $SITE..."
+		echo "⏲  Uploading Files & Database Backup to Dropbox for: $SITE_NAME..."
 		echo "——————————————————————————————————"
 
 		# Upload packages to Dropbox.
@@ -129,7 +129,86 @@ if [[ "$is_backup_all" == "yes" ]]; then
 	# rm -rf $BACKUPPATH/*
 
 	# Delete old backups locally over DAYSKEEP days old.
-	find $BACKUPPATH -type d -mtime +$DAYSKEEP -exec rm -rf {} \;
+	# find $BACKUPPATH -type d -mtime +$DAYSKEEP -exec rm -rf {} \;
+
+	# Fix permissions.
+	sudo chown -R www-data:www-data $SITESTORE
+	sudo find $SITESTORE -type f -exec chmod 644 {} +
+	sudo find $SITESTORE -type d -exec chmod 755 {} +
+fi
+
+
+#.# Backup Single Site.
+#
+#   Backup for single sites.
+#
+#   @since 1.0.0
+if [[ "$is_backup" == "yes" ]]; then
+
+	# $backup_url URL to publically downloadable .tar.gz cPanel Backup file.
+	echo "——————————————————————————————————"
+	echo "👉  Enter PATH to a single site [E.g. /var/www/site.tld/]:"
+	echo "——————————————————————————————————"
+	read -r SITE_PATH
+
+	echo "——————————————————————————————————"
+	echo "👉  Enter Name of a single site [E.g. site.tld]:"
+	echo "——————————————————————————————————"
+	read -r SITE_NAME
+
+	echo "——————————————————————————————————"
+	echo "⚡️  Backing up the site: $SITE_NAME..."
+	echo "——————————————————————————————————"
+
+	# Enter the WordPress folder.
+	cd $SITE_PATH
+
+	# Check of the backup folder for this site exits.
+	if [ ! -e $BACKUPPATH/$SITE_NAME ]; then
+		mkdir -p $BACKUPPATH/$SITE_NAME
+	fi
+
+	echo "——————————————————————————————————"
+	echo "⏲  Creating Files Backup for: $SITE_NAME..."
+	echo "——————————————————————————————————"
+
+	# Back up the WordPress folder.
+	tar -czf $BACKUPPATH/$SITE_NAME/$DATEFORM-$SITE_NAME.tar.gz .
+
+	echo "——————————————————————————————————"
+	echo "⏲  Creating Database Backup for: $SITE_NAME..."
+	echo "——————————————————————————————————"
+
+	# Back up the WordPress database.
+	wp db export $BACKUPPATH/$SITE_NAME/$DATEFORM-$SITE_NAME.sql --allow-root --path=$SITE_PATH/htdocs
+	tar -czf $BACKUPPATH/$SITE_NAME/$DATEFORM-$SITE_NAME.sql.gz $BACKUPPATH/$SITE_NAME/$DATEFORM-$SITE_NAME.sql
+	rm $BACKUPPATH/$SITE_NAME/$DATEFORM-$SITE_NAME.sql
+
+	echo "——————————————————————————————————"
+	echo "⏲  Uploading Files & Database Backup to Dropbox for: $SITE_NAME..."
+	echo "——————————————————————————————————"
+
+	# Upload packages to Dropbox.
+	dbx upload $BACKUPPATH/$SITE_NAME/$DATEFORM-$SITE_NAME.tar.gz /$SITE_NAME/
+	dbx upload $BACKUPPATH/$SITE_NAME/$DATEFORM-$SITE_NAME.sql.gz /$SITE_NAME/
+
+	# Check if there are old backups and delete them.
+	EXISTS=$(dbx list /$SITE_NAME | grep -E $DAYSKEPT.*.tar.gz | awk '{print $3}')
+	if [ ! -z $EXISTS ]; then
+		dbx delete /$SITE_NAME/$DAYSKEPT-$SITE_NAME.tar.gz
+		dbx delete /$SITE_NAME/$DAYSKEPT-$SITE_NAME.sql.gz
+	fi
+
+	echo "——————————————————————————————————"
+	echo "🔥  $SITE_NAME Backup Complete!"
+	echo "——————————————————————————————————"
+
+
+	# If you want to delete all local backups
+	# rm -rf $BACKUPPATH/*
+
+	# Delete old backups locally over DAYSKEEP days old.
+	# find $BACKUPPATH -type d -mtime +$DAYSKEEP -exec rm -rf {} \;
 
 	# Fix permissions.
 	sudo chown -R www-data:www-data $SITESTORE
@@ -147,7 +226,7 @@ if [[ "$is_restore_all" == "yes" ]]; then
 	# Start the loop.
 	for SITE in ${SITELIST[@]}; do
 		echo "——————————————————————————————————"
-		echo "⚡️  Restoring site: $SITE..."
+		echo "⚡️  Restoring site: $SITE_NAME..."
 		echo "——————————————————————————————————"
 
 		#if you want to delete all local backups
@@ -160,7 +239,7 @@ if [[ "$is_restore_all" == "yes" ]]; then
 		cd $BACKUPPATH/$SITE
 
 		echo "——————————————————————————————————"
-		echo "⏲  Download site: $SITE..."
+		echo "⏲  Download site: $SITE_NAME..."
 		echo "——————————————————————————————————"
 
 		dbx download $SITE $BACKUPPATH/
