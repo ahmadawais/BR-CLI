@@ -145,7 +145,7 @@ fi
 #   @since 1.0.0
 if [[ "$is_backup" == "yes" ]]; then
 	echo "——————————————————————————————————"
-	echo "👉  Enter Name of a single site [E.g. site.tld]:"
+	echo "👉  Enter SITE NAME of a single site to backup [E.g. site.tld]:"
 	echo "——————————————————————————————————"
 	read -r SITE_NAME
 
