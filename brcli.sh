@@ -54,7 +54,7 @@ BACKUPPATH=~/backups
 SITESTORE=/var/www/
 
 # Date prefix for the backup files
-DATEFORM=$(date +"%Y-%m-%d")
+DATE=$(date +"%Y-%m-%d")
 
 # Days to retain the backups.
 DAYSKEEP=7
@@ -93,24 +93,24 @@ if [[ "$is_backup_all" == "yes" ]]; then
 		echo "——————————————————————————————————"
 
 		# Back up the WordPress folder.
-		tar -czf $BACKUPPATH/$SITE/$DATEFORM-$SITE.tar.gz .
+		tar -czf $BACKUPPATH/$SITE/$DATE-$SITE.tar.gz .
 
 		echo "——————————————————————————————————"
 		echo "⏲  Creating Database Backup for: $SITE_NAME..."
 		echo "——————————————————————————————————"
 
 		# Back up the WordPress database.
-		wp db export $BACKUPPATH/$SITE/$DATEFORM-$SITE.sql --allow-root --path=$SITESTORE/$SITE/htdocs
-		tar -czf $BACKUPPATH/$SITE/$DATEFORM-$SITE.sql.gz $BACKUPPATH/$SITE/$DATEFORM-$SITE.sql
-		rm $BACKUPPATH/$SITE/$DATEFORM-$SITE.sql
+		wp db export $BACKUPPATH/$SITE/$DATE-$SITE.sql --allow-root --path=$SITESTORE/$SITE/htdocs
+		tar -czf $BACKUPPATH/$SITE/$DATE-$SITE.sql.gz $BACKUPPATH/$SITE/$DATE-$SITE.sql
+		rm $BACKUPPATH/$SITE/$DATE-$SITE.sql
 
 		echo "——————————————————————————————————"
 		echo "⏲  Uploading Files & Database Backup to Dropbox for: $SITE_NAME..."
 		echo "——————————————————————————————————"
 
 		# Upload packages to Dropbox.
-		dbx upload $BACKUPPATH/$SITE/$DATEFORM-$SITE.tar.gz /$SITE/
-		dbx upload $BACKUPPATH/$SITE/$DATEFORM-$SITE.sql.gz /$SITE/
+		dbx upload $BACKUPPATH/$SITE/$DATE-$SITE.tar.gz /$SITE/
+		dbx upload $BACKUPPATH/$SITE/$DATE-$SITE.sql.gz /$SITE/
 
 		# Check if there are old backups and delete them.
 		EXISTS=$(dbx list /$SITE | grep -E $DAYSKEPT.*.tar.gz | awk '{print $3}')
@@ -169,24 +169,24 @@ if [[ "$is_backup" == "yes" ]]; then
 	echo "——————————————————————————————————"
 
 	# Back up the WordPress folder.
-	tar -czf $BACKUPPATH/$SITE_NAME/$DATEFORM-$SITE_NAME.tar.gz .
+	tar -czf $BACKUPPATH/$SITE_NAME/$DATE-$SITE_NAME.tar.gz .
 
 	echo "——————————————————————————————————"
 	echo "⏲  Creating Database Backup for: $SITE_NAME..."
 	echo "——————————————————————————————————"
 
 	# Back up the WordPress database.
-	wp db export $BACKUPPATH/$SITE_NAME/$DATEFORM-$SITE_NAME.sql --allow-root --path=$SITE_PATH/htdocs
-	tar -czf $BACKUPPATH/$SITE_NAME/$DATEFORM-$SITE_NAME.sql.gz $BACKUPPATH/$SITE_NAME/$DATEFORM-$SITE_NAME.sql
-	rm $BACKUPPATH/$SITE_NAME/$DATEFORM-$SITE_NAME.sql
+	wp db export $BACKUPPATH/$SITE_NAME/$DATE-$SITE_NAME.sql --allow-root --path=$SITE_PATH/htdocs
+	tar -czf $BACKUPPATH/$SITE_NAME/$DATE-$SITE_NAME.sql.gz $BACKUPPATH/$SITE_NAME/$DATE-$SITE_NAME.sql
+	rm $BACKUPPATH/$SITE_NAME/$DATE-$SITE_NAME.sql
 
 	echo "——————————————————————————————————"
 	echo "⏲  Uploading Files & Database Backup to Dropbox for: $SITE_NAME..."
 	echo "——————————————————————————————————"
 
 	# Upload packages to Dropbox.
-	dbx upload $BACKUPPATH/$SITE_NAME/$DATEFORM-$SITE_NAME.tar.gz /$SITE_NAME/
-	dbx upload $BACKUPPATH/$SITE_NAME/$DATEFORM-$SITE_NAME.sql.gz /$SITE_NAME/
+	dbx upload $BACKUPPATH/$SITE_NAME/$DATE-$SITE_NAME.tar.gz /$SITE_NAME/
+	dbx upload $BACKUPPATH/$SITE_NAME/$DATE-$SITE_NAME.sql.gz /$SITE_NAME/
 
 	# Check if there are old backups and delete them.
 	EXISTS=$(dbx list /$SITE_NAME | grep -E $DAYSKEPT.*.tar.gz | awk '{print $3}')
@@ -207,9 +207,9 @@ if [[ "$is_backup" == "yes" ]]; then
 	# find $BACKUPPATH -type d -mtime +$DAYSKEEP -exec rm -rf {} \;
 
 	# Fix permissions.
-	sudo chown -R www-data:www-data $SITESTORE
-	sudo find $SITESTORE -type f -exec chmod 644 {} +
-	sudo find $SITESTORE -type d -exec chmod 755 {} +
+	sudo chown -R www-data:www-data $SITE_PATH
+	sudo find $SITE_PATH -type f -exec chmod 644 {} +
+	sudo find $SITE_PATH -type d -exec chmod 755 {} +
 fi
 
 #.# Restore All.
@@ -261,11 +261,11 @@ if [[ "$is_restore_all" == "yes" ]]; then
 		# Un tar the backup,
 		# -C To extract an archive to a directory different from the current.
 		# --strip-components=1 to remove the root(first level) directory inside the zip.
-		tar -xvzf $BACKUPPATH/$SITE/$DATEFORM-$SITE.tar.gz -C $BACKUPPATH/$SITE/files/ #--strip-components=1
+		tar -xvzf $BACKUPPATH/$SITE/$DATE-$SITE.tar.gz -C $BACKUPPATH/$SITE/files/ #--strip-components=1
 
 		echo "FILEs extracted"
 
-		tar -xvzf $BACKUPPATH/$SITE/$DATEFORM-$SITE.sql.gz -C $BACKUPPATH/$SITE/db/ --strip-components=3
+		tar -xvzf $BACKUPPATH/$SITE/$DATE-$SITE.sql.gz -C $BACKUPPATH/$SITE/db/ --strip-components=3
 		echo "Db extracted"
 
 		echo "——————————————————————————————————"
@@ -283,7 +283,7 @@ if [[ "$is_restore_all" == "yes" ]]; then
 		wp db reset --yes --path=$SITESTORE/$SITE/htdocs/ --allow-root
 
 		# Import the DB of old site to new site.
-		wp db import $BACKUPPATH/$SITE/db/$DATEFORM-$SITE.sql --path=$SITESTORE/$SITE/htdocs/ --allow-root
+		wp db import $BACKUPPATH/$SITE/db/$DATE-$SITE.sql --path=$SITESTORE/$SITE/htdocs/ --allow-root
 		wp db repair --path=$SITESTORE/$SITE/htdocs/ --allow-root
 		wp db optimize --path=$SITESTORE/$SITE/htdocs/ --allow-root
 
@@ -301,8 +301,110 @@ if [[ "$is_restore_all" == "yes" ]]; then
 	done
 fi
 
+#.# Restore Single Site.
+#
+#   Restore for single site.
+#
+#   @since 1.0.0
+if [[ "$is_restore" == "yes" ]]; then
+	echo "——————————————————————————————————"
+	echo "👉  Enter SITE NAME of a single site to restore [E.g. site.tld]:"
+	echo "——————————————————————————————————"
+	read -r SITE_NAME
+
+	echo "——————————————————————————————————"
+	echo "👉  Enter DATE of backup to restore [E.g. 2016-10-01]:"
+	echo "——————————————————————————————————"
+	read -r DATE
+
+	# $SITE_PATH path for site.
+	SITE_PATH=/var/www/"$SITE_NAME"/
+
+	echo "——————————————————————————————————"
+	echo "⚡️  Restoring site: $SITE_NAME..."
+	echo "——————————————————————————————————"
+
+	#if you want to delete all local backups
+	rm -rf $BACKUPPATH/$SITE_NAME
+
+	if [ ! -e $BACKUPPATH/$SITE_NAME ]; then
+		mkdir -p $BACKUPPATH/$SITE_NAME
+	fi
+
+	cd $BACKUPPATH/$SITE_NAME
+
+	echo "——————————————————————————————————"
+	echo "⏲  Download site: $SITE_NAME..."
+	echo "——————————————————————————————————"
+
+	dbx download $SITE_NAME $BACKUPPATH/
+
+	echo "——————————————————————————————————"
+	echo "🔥  Backup Download Successful 💯"
+	echo "——————————————————————————————————"
+
+	# Remove new WP content.
+	rm -rf $SITE_PATH/*
+
+	echo "——————————————————————————————————"
+	echo "⏲  Removing current site files & resetting the database..."
+	echo "——————————————————————————————————"
+
+	mkdir -p $BACKUPPATH/$SITE_NAME/files
+	mkdir -p $BACKUPPATH/$SITE_NAME/db
+
+	echo "——————————————————————————————————"
+	echo "⏲  Now extracting the backup..."
+	echo "——————————————————————————————————"
+
+	# Un tar the backup,
+	# -C To extract an archive to a directory different from the current.
+	# --strip-components=1 to remove the root(first level) directory inside the zip.
+	tar -xvzf $BACKUPPATH/$SITE_NAME/$DATE-$SITE_NAME.tar.gz -C $BACKUPPATH/$SITE_NAME/files/ #--strip-components=1
+
+	echo "FILEs extracted"
+
+	tar -xvzf $BACKUPPATH/$SITE_NAME/$DATE-$SITE_NAME.sql.gz -C $BACKUPPATH/$SITE_NAME/db/ --strip-components=3
+	echo "Db extracted"
+
+	echo "——————————————————————————————————"
+	echo "⏲  Restoring the files..."
+	echo "——————————————————————————————————"
+
+	# Add the backup content.
+	rsync -avz --info=progress2 --stats --human-readable $BACKUPPATH/$SITE_NAME/files/* $SITE_PATH #--exclude 'wp-config.php' --exclude 'wp-config-sample.php' #--info=progress2 --progress --stats --human-readable
+
+	echo "——————————————————————————————————"
+	echo "⏲  Restoring the database..."
+	echo "——————————————————————————————————"
+
+	# Reset the database.
+	wp db reset --yes --path=$SITESTORE/$SITE_NAME/htdocs/ --allow-root
+
+	# Import the DB of old site to new site.
+	wp db import $BACKUPPATH/$SITE_NAME/db/$DATE-$SITE_NAME.sql --path=$SITE_PATH/htdocs/ --allow-root
+	wp db repair --path=$SITE_PATH/htdocs/ --allow-root
+	wp db optimize --path=$SITE_PATH/htdocs/ --allow-root
+
+	echo "——————————————————————————————————"
+	echo "⏲  Fixing permissions..."
+	echo "——————————————————————————————————"
+
+	sudo chown -R www-data:www-data $SITE_PATH
+	sudo find $SITE_PATH -type f -exec chmod 644 {} +
+	sudo find $SITE_PATH -type d -exec chmod 755 {} +
+
+	echo "——————————————————————————————————"
+	echo "🔥  $SITE_NAME has been restored!"
+	echo "——————————————————————————————————"
+fi
+
+#.# If no parameter is added.
 if [ $# -eq 0 ]; then
-	echo "No arguments provided"
+	echo "——————————————————————————————————"
+	echo "❌ No arguments provided!"
+	echo "——————————————————————————————————"
 	echo "Usage: brcli [ -b |--backup ], [ -ba | --backup_all ], [ -r | --resotre ], [ -ra | --restore-all ], and [ -h | help ]"
+	echo "——————————————————————————————————"
 	exit 1
 fi
