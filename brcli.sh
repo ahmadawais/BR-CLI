@@ -305,10 +305,12 @@ fi
 #
 #   Restore for single site.
 #
+#   Usage: brcli -r
+#
 #   @since 1.0.0
 if [[ "$is_restore" == "yes" ]]; then
 	echo "——————————————————————————————————"
-	echo "👉  Enter SITE NAME of a single site to restore [E.g. site.tld]:"
+	echo "👉  Enter SITE NAME of a single site to restore [E.g. site.ext]:"
 	echo "——————————————————————————————————"
 	read -r SITE_NAME
 
@@ -340,7 +342,8 @@ if [[ "$is_restore" == "yes" ]]; then
 	echo "⏲  Download site: $SITE_NAME..."
 	echo "——————————————————————————————————"
 
-	dbx download $SITE_NAME $BACKUPPATH/
+	dbx download $SITE_NAME-SITE_NAME.tar.gz $BACKUPPATH/
+	dbx download $SITE_NAME-SITE_NAME.sql.gz $BACKUPPATH/
 
 	echo "——————————————————————————————————"
 	echo "🔥  Backup Download Successful 💯"
