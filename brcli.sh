@@ -342,8 +342,8 @@ if [[ "$is_restore" == "yes" ]]; then
 	echo "⏲  Download site: $SITE_NAME..."
 	echo "——————————————————————————————————"
 
-	dbx download $SITE_NAME-SITE_NAME.tar.gz $BACKUPPATH/
-	dbx download $SITE_NAME-SITE_NAME.sql.gz $BACKUPPATH/
+	dbx download $SITE_NAME/$DATE-$SITE_NAME.tar.gz $BACKUPPATH/
+	dbx download $SITE_NAME/$DATE-$SITE_NAME.sql.gz $BACKUPPATH/
 
 	echo "——————————————————————————————————"
 	echo "🔥  Backup Download Successful 💯"
