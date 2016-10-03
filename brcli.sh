@@ -126,7 +126,7 @@ if [[ "$is_backup_all" == "yes" ]]; then
 	done
 
 	# If you want to delete all local backups
-	# rm -rf $BACKUPPATH/*
+	rm -rf $BACKUPPATH
 
 	# Delete old backups locally over DAYSKEEP days old.
 	# find $BACKUPPATH -type d -mtime +$DAYSKEEP -exec rm -rf {} \;
@@ -201,7 +201,7 @@ if [[ "$is_backup" == "yes" ]]; then
 
 
 	# If you want to delete all local backups
-	# rm -rf $BACKUPPATH/*
+	rm -rf $BACKUPPATH
 
 	# Delete old backups locally over DAYSKEEP days old.
 	# find $BACKUPPATH -type d -mtime +$DAYSKEEP -exec rm -rf {} \;
@@ -403,6 +403,12 @@ if [[ "$is_restore" == "yes" ]]; then
 	echo "——————————————————————————————————"
 	echo "🔥  $SITE_NAME has been restored!"
 	echo "——————————————————————————————————"
+
+	# If you want to delete all local backups
+	rm -rf $BACKUPPATH
+	rm -rf $SITE_NAME
+
+
 fi
 
 #.# If no parameter is added.
