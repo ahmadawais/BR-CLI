@@ -132,9 +132,9 @@ if [[ "$is_backup_all" == "yes" ]]; then
 	# find $BACKUPPATH -type d -mtime +$DAYSKEEP -exec rm -rf {} \;
 
 	# Fix permissions.
-	sudo chown -R www-data:www-data $SITESTORE
-	sudo find $SITESTORE -type f -exec chmod 644 {} +
-	sudo find $SITESTORE -type d -exec chmod 755 {} +
+	sudo chown -R www-data:www-data $SITESTORE/$SITE/htdocs/
+	sudo find $SITESTORE/$SITE/htdocs/ -type f -exec chmod 644 {} +
+	sudo find $SITESTORE/$SITE/htdocs/ -type d -exec chmod 755 {} +
 fi
 
 
@@ -207,9 +207,9 @@ if [[ "$is_backup" == "yes" ]]; then
 	# find $BACKUPPATH -type d -mtime +$DAYSKEEP -exec rm -rf {} \;
 
 	# Fix permissions.
-	sudo chown -R www-data:www-data $SITE_PATH
-	sudo find $SITE_PATH -type f -exec chmod 644 {} +
-	sudo find $SITE_PATH -type d -exec chmod 755 {} +
+	sudo chown -R www-data:www-data $SITE_PATH/htdocs/
+	sudo find $SITE_PATH/htdocs/ -type f -exec chmod 644 {} +
+	sudo find $SITE_PATH/htdocs/ -type d -exec chmod 755 {} +
 fi
 
 #.# Restore All.
@@ -291,9 +291,9 @@ if [[ "$is_restore_all" == "yes" ]]; then
 		echo "⏲  Fixing permissions..."
 		echo "——————————————————————————————————"
 
-		sudo chown -R www-data:www-data $SITESTORE
-		sudo find $SITESTORE -type f -exec chmod 644 {} +
-		sudo find $SITESTORE -type d -exec chmod 755 {} +
+		sudo chown -R www-data:www-data $SITESTORE/$SITE/htdocs/
+		sudo find $SITESTORE/$SITE/htdocs/ -type f -exec chmod 644 {} +
+		sudo find $SITESTORE/$SITE/htdocs/ -type d -exec chmod 755 {} +
 
 		echo "——————————————————————————————————"
 		echo "🔥  $SITE has been restored!"
@@ -396,9 +396,9 @@ if [[ "$is_restore" == "yes" ]]; then
 	echo "⏲  Fixing permissions..."
 	echo "——————————————————————————————————"
 
-	sudo chown -R www-data:www-data $SITE_PATH
-	sudo find $SITE_PATH -type f -exec chmod 644 {} +
-	sudo find $SITE_PATH -type d -exec chmod 755 {} +
+	sudo chown -R www-data:www-data $SITE_PATH/htdocs/
+	sudo find $SITE_PATH/htdocs/ -type f -exec chmod 644 {} +
+	sudo find $SITE_PATH/htdocs/ -type d -exec chmod 755 {} +
 
 	echo "——————————————————————————————————"
 	echo "🔥  $SITE_NAME has been restored!"
