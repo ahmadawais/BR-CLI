@@ -16,22 +16,22 @@ sudo install ./dbx /usr/local/bin/dbx
 for i in "$@" ; do
 	# Is backup.
 	if [[ $i == "--backup" || $i == "-b" ]] ; then
-		is_backup="yes"
+		IS_BACKUP="yes"
 	fi
 
 	# Is backup all.
 	if [[ $i == "--backup-all" || $i == "-ba" ]] ; then
-		is_backup_all="yes"
+		IS_BACKUP_ALL="yes"
 	fi
 
 	# Is restore.
 	if [[ $i == "--restore" || $i == "-r" ]] ; then
-		is_restore="yes"
+		IS_RESTORE="yes"
 	fi
 
 	# Is restore all.
 	if [[ $i == "--restore-all" || $i == "-ra" ]] ; then
-		is_restore_all="yes"
+		IS_RESTORE_ALL="yes"
 	fi
 
 	# Help.
@@ -73,11 +73,11 @@ mkdir -p $BACKUPPATH
 #   Backup all sites.
 #
 #   @since 1.0.0
-if [[ "$is_backup_all" == "yes" ]]; then
+if [[ "$IS_BACKUP_ALL" == "yes" ]]; then
 	# Start the loop
 	for SITE in ${SITELIST[@]}; do
 		echo "——————————————————————————————————"
-		echo "⚡️  Backing up the site: $SITE_NAME..."
+		echo "⚡️  Backing up the site: $SITE..."
 		echo "——————————————————————————————————"
 
 		# Enter the WordPress folder.
@@ -89,14 +89,14 @@ if [[ "$is_backup_all" == "yes" ]]; then
 		fi
 
 		echo "——————————————————————————————————"
-		echo "⏲  Creating Files Backup for: $SITE_NAME..."
+		echo "⏲  Creating Files Backup for: $SITE..."
 		echo "——————————————————————————————————"
 
 		# Back up the WordPress folder.
 		tar -czf $BACKUPPATH/$SITE/$DATE-$SITE.tar.gz .
 
 		echo "——————————————————————————————————"
-		echo "⏲  Creating Database Backup for: $SITE_NAME..."
+		echo "⏲  Creating Database Backup for: $SITE..."
 		echo "——————————————————————————————————"
 
 		# Back up the WordPress database.
@@ -105,7 +105,7 @@ if [[ "$is_backup_all" == "yes" ]]; then
 		rm $BACKUPPATH/$SITE/$DATE-$SITE.sql
 
 		echo "——————————————————————————————————"
-		echo "⏲  Uploading Files & Database Backup to Dropbox for: $SITE_NAME..."
+		echo "⏲  Uploading Files & Database Backup to Dropbox for: $SITE..."
 		echo "——————————————————————————————————"
 
 		# Upload packages to Dropbox.
@@ -125,8 +125,8 @@ if [[ "$is_backup_all" == "yes" ]]; then
 
 	done
 
-	# If you want to delete all local backups
-	rm -rf $BACKUPPATH
+	# Delete all local backups.
+	rm -rf $BACKUPPATH/$SITE
 
 	# Delete old backups locally over DAYSKEEP days old.
 	# find $BACKUPPATH -type d -mtime +$DAYSKEEP -exec rm -rf {} \;
@@ -143,7 +143,7 @@ fi
 #   Backup for single sites.
 #
 #   @since 1.0.0
-if [[ "$is_backup" == "yes" ]]; then
+if [[ "$IS_BACKUP" == "yes" ]]; then
 	echo "——————————————————————————————————"
 	echo "👉  Enter SITE NAME of a single site to backup [E.g. site.tld]:"
 	echo "——————————————————————————————————"
@@ -200,8 +200,8 @@ if [[ "$is_backup" == "yes" ]]; then
 	echo "——————————————————————————————————"
 
 
-	# If you want to delete all local backups
-	rm -rf $BACKUPPATH
+	# Delete all local backups.
+	rm -rf $BACKUPPATH/$SITE_NAME
 
 	# Delete old backups locally over DAYSKEEP days old.
 	# find $BACKUPPATH -type d -mtime +$DAYSKEEP -exec rm -rf {} \;
@@ -217,15 +217,15 @@ fi
 #   Restore all sites.
 #
 #   @since 1.0.0
-if [[ "$is_restore_all" == "yes" ]]; then
+if [[ "$IS_RESTORE_ALL" == "yes" ]]; then
 
 	# Start the loop.
 	for SITE in ${SITELIST[@]}; do
 		echo "——————————————————————————————————"
-		echo "⚡️  Restoring site: $SITE_NAME..."
+		echo "⚡️  Restoring site: $SITE..."
 		echo "——————————————————————————————————"
 
-		#if you want to delete all local backups
+		# Delete all local backups.
 		rm -rf $BACKUPPATH/$SITE
 
 		if [ ! -e $BACKUPPATH/$SITE ]; then
@@ -235,7 +235,7 @@ if [[ "$is_restore_all" == "yes" ]]; then
 		cd $BACKUPPATH/$SITE
 
 		echo "——————————————————————————————————"
-		echo "⏲  Download site: $SITE_NAME..."
+		echo "⏲  Download site: $SITE..."
 		echo "——————————————————————————————————"
 
 		dbx download $SITE $BACKUPPATH/
@@ -263,7 +263,7 @@ if [[ "$is_restore_all" == "yes" ]]; then
 		# --strip-components=1 to remove the root(first level) directory inside the zip.
 		tar -xvzf $BACKUPPATH/$SITE/$DATE-$SITE.tar.gz -C $BACKUPPATH/$SITE/files/ #--strip-components=1
 
-		echo "FILEs extracted"
+		echo "FILES extracted"
 
 		tar -xvzf $BACKUPPATH/$SITE/$DATE-$SITE.sql.gz -C $BACKUPPATH/$SITE/db/ --strip-components=3
 		echo "Db extracted"
@@ -295,6 +295,9 @@ if [[ "$is_restore_all" == "yes" ]]; then
 		sudo find $SITESTORE/$SITE/htdocs/ -type f -exec chmod 644 {} +
 		sudo find $SITESTORE/$SITE/htdocs/ -type d -exec chmod 755 {} +
 
+		# Delete all local backups.
+		rm -rf $BACKUPPATH/$SITE
+
 		echo "——————————————————————————————————"
 		echo "🔥  $SITE has been restored!"
 		echo "——————————————————————————————————"
@@ -308,7 +311,7 @@ fi
 #   Usage: brcli -r
 #
 #   @since 1.0.0
-if [[ "$is_restore" == "yes" ]]; then
+if [[ "$IS_RESTORE" == "yes" ]]; then
 	echo "——————————————————————————————————"
 	echo "👉  Enter SITE NAME of a single site to restore [E.g. site.ext]:"
 	echo "——————————————————————————————————"
@@ -329,7 +332,7 @@ if [[ "$is_restore" == "yes" ]]; then
 	echo "⚡️  Restoring site: $SITE_NAME..."
 	echo "——————————————————————————————————"
 
-	#if you want to delete all local backups
+	# Delete all local backups.
 	rm -rf $BACKUPPATH/$SITE_NAME
 
 	if [ ! -e $BACKUPPATH/$SITE_NAME ]; then
@@ -400,15 +403,12 @@ if [[ "$is_restore" == "yes" ]]; then
 	sudo find $SITE_PATH/htdocs/ -type f -exec chmod 644 {} +
 	sudo find $SITE_PATH/htdocs/ -type d -exec chmod 755 {} +
 
+	# Delete all local backups.
+	rm -rf $BACKUPPATH/$SITE_NAME
+
 	echo "——————————————————————————————————"
 	echo "🔥  $SITE_NAME has been restored!"
 	echo "——————————————————————————————————"
-
-	# If you want to delete all local backups
-	rm -rf $BACKUPPATH
-	rm -rf $SITE_NAME
-
-
 fi
 
 #.# If no parameter is added.
