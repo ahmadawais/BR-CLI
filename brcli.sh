@@ -5,12 +5,17 @@
 # Version: 1.0.0
 # Author: Ahmad Awais.
 # Author URI: http://AhmadAwais.com/
+#
+# Props & Credits: andreafabrizi, wpbullet (Mike Adreasen)
 
 #.# Install Dropbox uploader
 #  @link https://github.com/andreafabrizi/Dropbox-Uploader
 wget -qO dbx https://git.io/vBypP
 sudo chmod +x ./dbx
 sudo install ./dbx /usr/local/bin/dbx
+
+clear
+cd ~
 
 # Check all params for the config.
 for i in "$@" ; do
