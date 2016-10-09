@@ -2,20 +2,54 @@
 #
 # Backup & Restore CLI for Dropbox.
 #
-# Version: 1.0.0
+# Version: 1.1.0
 # Author: Ahmad Awais.
 # Author URI: http://AhmadAwais.com/
 #
 # Props & Credits: andreafabrizi, wpbullet (Mike Adreasen)
 
-#.# Install Dropbox uploader
-#  @link https://github.com/andreafabrizi/Dropbox-Uploader
-wget -qO dbx https://git.io/vBypP
-sudo chmod +x ./dbx
-sudo install ./dbx /usr/local/bin/dbx
+# Colors.
+#
+# colors from tput
+# http://stackoverflow.com/a/20983251/950111
+# Usage:
+# echo "${redb}red text ${gb}green text${r}"
+bb=`tput setab 0` #set background black
+bf=`tput setaf 0` #set foreground black
+gb=`tput setab 2` # set background green
+gf=`tput setab 2` # set background green
+blb=`tput setab 4` # set background blue
+blf=`tput setaf 4` # set foreground blue
+rb=`tput setab 1` # set background red
+rf=`tput setaf 1` # set foreground red
+wb=`tput setab 7` # set background white
+wf=`tput setaf 7` # set foreground white
+r=`tput sgr0`     # r to defaults
 
 clear
 cd ~
+
+# Backup file name that gets downloaded.
+BACKUP_FILE=b.tar.gz
+
+echo "—"
+echo "${gb}${bf} BR CLI ⚡️  ${r}"
+echo "${wb}${bf} Version 1.1.0 ${r}"
+echo "${wb}${bf} Backup & Restore CLI for EasyEngine with Dropbox.${r}"
+echo "—"
+
+echo "${gb}${bf}  ℹ️  Pre CEM CLI Checklist: ${r}"
+echo "${wb}${bf}  ␥  1. Have you configured Dropbox-Uploader? If not then install and configure it!${r} (INFO: https://github.com/andreafabrizi/Dropbox-Uploader)?"
+echo "${wb}${bf}  ␥  2. Make sure the Dropbox-Uploader file is excuteable and is rename to 'dbx'?${r}"
+echo "${blb}${bf}  INFO: All the above steps above are required for BR CLI to work. ${r}"
+
+#.# Install Dropbox uploader
+#  @link https://github.com/andreafabrizi/Dropbox-Uploader
+# wget -qO dbx https://git.io/vBypP
+# sudo chmod +x ./dbx
+# sudo install ./dbx /usr/local/bin/dbx
+
+
 
 # Check all params for the config.
 for i in "$@" ; do
@@ -270,8 +304,14 @@ if [[ "$IS_RESTORE_ALL" == "yes" ]]; then
 
 		echo "FILES extracted"
 
+		# Remove the backup file.
+		rm -f $BACKUPPATH/$SITE/$DATE-$SITE.tar.gz
+
 		tar -xvzf $BACKUPPATH/$SITE/$DATE-$SITE.sql.gz -C $BACKUPPATH/$SITE/db/ --strip-components=3
 		echo "Db extracted"
+
+		# Remove the backup file.
+		rm -f $BACKUPPATH/$SITE/$DATE-$SITE.sql.gz
 
 		echo "——————————————————————————————————"
 		echo "⏲  Restoring the files..."
@@ -378,8 +418,15 @@ if [[ "$IS_RESTORE" == "yes" ]]; then
 
 	echo "FILEs extracted"
 
+	# Remove the backup file.
+	rm -f $BACKUPPATH/$SITE/$DATE-$SITE.tar.gz
+
 	tar -xvzf $BACKUPPATH/$SITE_NAME/$DATE-$SITE_NAME.sql.gz -C $BACKUPPATH/$SITE_NAME/db/ --strip-components=3
+
 	echo "Db extracted"
+
+	# Remove the backup file.
+	rm -f $BACKUPPATH/$SITE/$DATE-$SITE.sql.gz
 
 	echo "——————————————————————————————————"
 	echo "⏲  Restoring the files..."
