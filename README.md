@@ -1,7 +1,7 @@
 # BR-CLI (Work In Progress)
 BRCLI is a Backup &amp; Restore CLI. It's built for self hosted VPS with EasyEngine for WP websites.
 
-##Installation
+## Installation
 To install `brcli` run the following command in your Mac's terminal.
 ```bash
 wget -qO brcli https://git.io/vPqty && sudo chmod +x ./brcli && sudo install ./brcli /usr/local/bin/brcli
